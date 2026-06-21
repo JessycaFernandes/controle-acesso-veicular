@@ -1,0 +1,333 @@
+GerenciadorTelas:
+
+<TelaPrincipal>:
+    name: 'principal'
+    canvas.before:
+        Color:
+            rgba: 0.85, 0.85, 0.85, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+        Color:
+            rgba: 0.05, 0.05, 0.05, 1
+        RoundedRectangle:
+            pos: self.x + 10, self.y + 10
+            size: self.width - 20, self.height - 20
+            radius: [35]
+
+        Color:
+            rgba: 0.05, 0.05, 0.08, 1
+        RoundedRectangle:
+            pos: self.x + 22, self.y + 22
+            size: self.width - 44, self.height - 44
+            radius: [25]
+
+        Color:
+            rgba: 0.02, 0.02, 0.02, 1
+        RoundedRectangle:
+            pos: self.center_x - 60, self.top - 35
+            size: 120, 20
+            radius: [10]
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [35, 50, 35, 35]
+        spacing: 8
+
+        Label:
+            text: 'SMARTGATE'
+            font_size: '22sp'
+            bold: True
+            color: 0.2, 0.7, 1, 1
+            size_hint_y: 0.08
+
+        Label:
+            text: 'Controle de Acesso Veicular'
+            font_size: '11sp'
+            color: 0.5, 0.5, 0.5, 1
+            size_hint_y: 0.04
+
+        FloatLayout:
+            size_hint_y: 0.55
+
+            Image:
+                id: camera_view
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                size_hint: 1, 1
+            
+            Widget: 
+                id: linha_scan
+                size_hint: 0.85, None
+                height: 3
+                pos_hint: {'center_x': 0.5, 'top': 0.95}
+                canvas:
+                    Color:
+                        rgba: 0.2, 0.7, 1, 0.9
+                    Rectangle:
+                        pos: self.pos
+                        size:self.size
+            Widget:
+                size_hint: None, None
+                size: 35, 35
+                pos_hint: {'x': 0.05, 'top': 0.95}
+                canvas:
+                    Color:
+                        rgba: 0.2, 0.7, 1, 1
+                    Line:
+                        points: self.x, self.y, self.x, self.y+self.height, self.x+self.width, self.y+self.height
+                        width: 3
+
+            Widget:
+                size_hint: None, None
+                size: 35, 35
+                pos_hint: {'right': 0.95, 'top': 0.95}
+                canvas:
+                    Color:
+                        rgba: 0.2, 0.7, 1, 1
+                    Line:
+                        points: self.x, self.y+self.height, self.right, self.y+self.height, self.right, self.y
+                        width: 3
+
+            Widget:
+                size_hint: None, None
+                size: 35, 35
+                pos_hint: {'x': 0.05, 'y': 0.05}
+                canvas:
+                    Color:
+                        rgba: 0.2, 0.7, 1, 1
+                    Line:
+                        points: self.x, self.y+self.height, self.x, self.y, self.x+self.width, self.y
+                        width: 3
+
+            Widget:
+                size_hint: None, None
+                size: 35, 35
+                pos_hint: {'right': 0.95, 'y': 0.05}
+                canvas:
+                    Color:
+                        rgba: 0.2, 0.7, 1, 1
+                    Line:
+                        points: self.x, self.y, self.right, self.y, self.right, self.y+self.height
+                        width: 3
+
+        Label:
+            id: label_placa
+            text: 'Aponte a câmera para a placa'
+            font_size: '13sp'
+            color: 0.8, 0.8, 0.8, 1
+            size_hint_y: 0.08
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.12
+            spacing: 8
+
+            Button:
+                text: 'Capturar'
+                font_size: '13sp'
+                background_color: 0.2, 0.6, 1, 1
+                background_normal: ''
+                on_press: root.capturar_placa()
+
+            Button:
+                text: 'Testar'
+                font_size: '13sp'
+                background_color: 0.2, 0.2, 0.3, 1
+                background_normal: ''
+                on_press: root.testar_imagem()
+
+<TelaAcessoLiberado>:
+    name: 'liberado'
+    canvas.before:
+        Color:
+            rgba: 0.85, 0.85, 0.85, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+        Color:
+            rgba: 0.05, 0.05, 0.05, 1
+        RoundedRectangle:
+            pos: self.x + 10, self.y + 10
+            size: self.width - 20, self.height - 20
+            radius: [35]
+
+        Color:
+            rgba: 0.04, 0.12, 0.04, 1
+        RoundedRectangle:
+            pos: self.x + 22, self.y + 22
+            size: self.width - 44, self.height - 44
+            radius: [25]
+
+        Color:
+            rgba: 0.02, 0.02, 0.02, 1
+        RoundedRectangle:
+            pos: self.center_x - 60, self.top - 35
+            size: 120, 20
+            radius: [10]
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [35, 60, 35, 35]
+        spacing: 15
+
+        Widget:
+            size_hint_y: 0.2
+            canvas:
+                Color:
+                    rgba: 0.2, 0.9, 0.3, 1
+                Line:
+                    width: 4
+                    cap: 'round'
+                    joint: 'round'
+                    points: self.center_x - 25, self.center_y, self.center_x - 8, self.center_y - 18, self.center_x + 28, self.center_y + 20
+
+        Label:
+            text: 'ACESSO LIBERADO'
+            font_size: '24sp'
+            bold: True
+            color: 0.2, 0.9, 0.3, 1
+            size_hint_y: 0.12
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.4
+            spacing: 12
+            padding: 18
+            canvas.before:
+                Color:
+                    rgba: 0.08, 0.2, 0.08, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [15]
+
+            Label:
+                id: label_nome
+                text: ''
+                font_size: '18sp'
+                bold: True
+                color: 1, 1, 1, 1
+
+            Label:
+                id: label_setor
+                text: ''
+                font_size: '14sp'
+                color: 0.7, 1, 0.7, 1
+
+            Label:
+                id: label_matricula
+                text: ''
+                font_size: '14sp'
+                color: 0.7, 1, 0.7, 1
+
+        Button:
+            text: '← Voltar'
+            font_size: '14sp'
+            size_hint_y: 0.12
+            background_color: 0.1, 0.4, 0.1, 1
+            background_normal: ''
+            on_press: root.manager.current = 'principal'
+
+<TelaAcessoNegado>:
+    name: 'negado'
+    canvas.before:
+        Color:
+            rgba: 0.85, 0.85, 0.85, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+        Color:
+            rgba: 0.05, 0.05, 0.05, 1
+        RoundedRectangle:
+            pos: self.x + 10, self.y + 10
+            size: self.width - 20, self.height - 20
+            radius: [35]
+
+        Color:
+            rgba: 0.12, 0.04, 0.04, 1
+        RoundedRectangle:
+            pos: self.x + 22, self.y + 22
+            size: self.width - 44, self.height - 44
+            radius: [25]
+
+        Color:
+            rgba: 0.02, 0.02, 0.02, 1
+        RoundedRectangle:
+            pos: self.center_x - 60, self.top - 35
+            size: 120, 20
+            radius: [10]
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [35, 60, 35, 35]
+        spacing: 15
+
+        Widget:
+            size_hint_y: 0.2
+            canvas:
+                Color:
+                    rgba: 0.9, 0.2, 0.2, 1
+                Line:
+                    width: 4
+                    cap: 'round'
+                    points: self.center_x - 22, self.center_y - 22, self.center_x + 22, self.center_y + 22
+                Line:
+                    width: 4
+                    cap: 'round'
+                    points: self.center_x + 22, self.center_y - 22, self.center_x - 22, self.center_y + 22
+
+        Label:
+            text: 'ACESSO NEGADO'
+            font_size: '24sp'
+            bold: True
+            color: 0.9, 0.2, 0.2, 1
+            size_hint_y: 0.12
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.4
+            spacing: 8
+            padding: 18
+            canvas.before:
+                Color:
+                    rgba: 0.2, 0.08, 0.08, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [15]
+
+            Label:
+                id: label_placa_negado
+                text: ''
+                font_size: '16sp'
+                bold: True
+                color: 1, 1, 1, 1
+
+            Label:
+                id: label_nome_negado
+                text: ''
+                font_size: '15sp'
+                color: 1, 0.7, 0.7, 1
+
+            Label:
+                id: label_matricula_negado
+                text: ''
+                font_size: '15sp'
+                color: 1, 0.7, 0.7, 1
+
+            Label:
+                id: label_motivo_negado
+                text: 'Acesso não autorizado'
+                font_size: '14sp'
+                color: 1, 0.5, 0.5, 1
+
+        Button:
+            text: '← Voltar'
+            font_size: '14sp'
+            size_hint_y: 0.12
+            background_color: 0.4, 0.1, 0.1, 1
+            background_normal: ''
+            on_press: root.manager.current = 'principal'
