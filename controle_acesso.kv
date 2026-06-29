@@ -1,5 +1,6 @@
 GerenciadorTelas:
 
+#quando existet uma TEla principal , ela terá essa aparencia
 <TelaPrincipal>:
     name: 'principal'
     canvas.before:
@@ -221,9 +222,15 @@ GerenciadorTelas:
                 text: ''
                 font_size: '14sp'
                 color: 0.7, 1, 0.7, 1
+            
+            Label:
+                id: label_data
+                text: ''
+                font_size: '14sp'
+                color: 0.7, 1, 0.7, 1
 
         Button:
-            text: '← Voltar'
+            text: ' Voltar'
             font_size: '14sp'
             size_hint_y: 0.12
             background_color: 0.1, 0.4, 0.1, 1
@@ -321,6 +328,11 @@ GerenciadorTelas:
             Label:
                 id: label_motivo_negado
                 text: 'Acesso não autorizado'
+                font_size: '14sp'
+                color: 1, 0.5, 0.5, 1
+            Label:
+                id: label_data_negado
+                text: ''
                 font_size: '14sp'
                 color: 1, 0.5, 0.5, 1
 

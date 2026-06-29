@@ -1,17 +1,26 @@
+#Permite que o python interaja com o sitema opercional, tipo qual pasta, arquivos
 import os
+#Procura padrões dentro de textos
 import re
+#utiliza a IA para reconhecer textos em imagens
 import easyocr
+#organiza os pixels das img para matrizes e arrays
 import numpy as np
+#Importa a classe Image da biblioteca Pillow, serve para abrir e manipular img
 from PIL import Image
 
 leitor = easyocr.Reader(['en'], gpu=False)
 
+#Cria a função ler placa e ercebe um parâmetro , que é o caminho da img
 def ler_placa(caminho_imagem):
+    # Essa linha na parte" image.open" abre a img, e converte ela para o formato rgb
     img = Image.open(caminho_imagem).convert('RGB')
     img_array = np.array(img)
     
+    #dentro de resultados, tem as coordenadas, o texto e o nível de precisão ou confiança
     resultado = leitor.readtext(img_array)
     
+    # aqui é armazenado todos os textos ness lista
     textos = []
     for item in resultado:
         texto = item[1]
@@ -34,8 +43,10 @@ def ler_placa(caminho_imagem):
         
         print(f'Texto corrigido: {texto_corrigido}')
         
+        #padrão mercosul
         match = re.search(r'[A-Z]{3}[0-9][A-Z0-9][0-9]{2}', texto_corrigido)
         
+        # se encontrou uma placa, retorna o etxto encontrado
         if match:
             return match.group()
         return None

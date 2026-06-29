@@ -1,4 +1,6 @@
+#manipula banco de dados
 import sqlite3
+#trabalha coma arquivos e pastas
 import os
 
 #Pega a pasta onde o banaco.py está
@@ -32,6 +34,7 @@ def criar_banco():
         )
     ''')
     
+    #Confirma e salva alterações
     conn.commit()
     conn.close()
     print('Banco de dados criado com sucesso!')
@@ -52,22 +55,28 @@ def buscar_motoristas(placa):
 
 def registrar_acesso(placa, status, motivo=None):
     from datetime import datetime
-    
-    conn= sqlite3.connect(BANCO)
-    cursor= conn.cursor()
-    
+
+    # Guarda a data e hora em uma variável
+    data_hora = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+
+    conn = sqlite3.connect(BANCO)
+    cursor = conn.cursor()
+
     cursor.execute('''
         INSERT INTO log_acessos (placa, data_hora, status, motivo)
         VALUES (?, ?, ?, ?)
     ''', (
         placa,
-        datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        data_hora,
         status,
         motivo
     ))
-    
+
     conn.commit()
     conn.close()
+
+    # Retorna a data para quem chamou a função
+    return data_hora
     
 def inserir_motorista_teste():
     conn= sqlite3.connect(BANCO)

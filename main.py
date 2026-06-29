@@ -1,18 +1,27 @@
-from plyer import filechooser
 #Usa essa biblioteca para escolher um arquivo do notebook
+from plyer import filechooser
+
+#O import importa a biblioteca inteira já o from pega uma coisa específica dentro dela
+
+#Essa parte é pra fazer a animação do escaner, que o kivy já tem
 from kivy.animation import Animation
+#No kivy praticamente tudo é um widget, uma img um labeç
 from kivy.uix.widget import Widget
 
-import os
 # Import Serve para trazer funcionalidade de outros módulos, os trabalha com pastas e arquivos
+# O operating Sytem é uma biblioteca que conevresa com o sistema operacional
+import os
+# BIblioteca que permite controlar o próprio python
 import sys
+
+#Permite acessar informações do sistema e do interpretador do python
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
-#Permite acessar informações do sistema e do interpretador do python
+
+# Essa biblioteca é responsável por abrir a câmera
 import cv2
-# Essa biblioteca é responsável por abrir a câmera 
+ #Permite executar tarefas paralelas ao mesmo tempo, tipo abrir telas e tals
 import threading
-#Permite execuitar tarefas paralelas ao mesmo tempo
 
 
 # importa o sistema de configuração inteiro do kivy
@@ -20,48 +29,57 @@ from kivy.config import Config
 #Configura o tamanho da janela 
 Config.set('graphics', 'width', '400')
 Config.set('graphics', 'height', '750')
-#IMpedee o usuário de alterar o tamanho da janela
+#Impede o usuário de alterar o tamanho da janela
 Config.set('graphics', 'resizable', False)
 
 
-
+#App é a classe principal do kivy
 from kivy.app import App
+#Lê arquivos .kv
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 #screen manager é o que controla a tela, screen representa um tela
 from kivy.clock import Clock
 #Representa o tempo
 from kivy.graphics.texture import Texture
-#Permite transformar uma imagem OPencv em uma imagem exibida no kivy
+#Permite transformar uma imagem OPencv em uma imagem exibida no kivy, a conversão delas
 
 
 
 # Importa as funções do banco de dados e OCR
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from banco.banco import buscar_motoristas, registrar_acesso, criar_banco
-# função para buscar motorista
+# função para buscar motorista, significa Optical Character Recognition , que é reconhecimento óptico de caracteres
 from ocr.leitor_placa import ler_placa
 
 PASTA = os.path.dirname(os.path.abspath(__file__))
 
+#Essa é a classe base do código, ela vai guardar todos os atributos e métodos. Além disso, ela herda coisas da classe já disponível no kivy,screen, isso é herança
 class TelaPrincipal(Screen):
+    # o init é o método que cria o objeto,como se fosse as instruções de montagem, o kwargs significa que ele aceita qualquer argumento que vem de fora(kivy)
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        #Importante lembrar que o atributo é qualquer variável que pertence a uma classe, o objeto é uma instância de uma classe. Nesse caso da câmera ela é um atributo e está indicando que não tem nada nele ainda
         self.camera = None
+        #Esse é outro atributo( é o lugar onde se aloca o obj) no caso esse é booleano, verdadeiro ou falso. De início a câmera n está ligada
         self.rodando = False
 
+
+    #Utilizo o def nesse caso para criar um método, esse método n foi criado por mim ele já existe no kivy, e toda vez que é aberto o kivy procura esse método para abrir uma tela
     def on_enter(self):
-        # Quando entrar na tela, liga a câmera
+        # Quando entrar na tela, liga a câmera, esse obj controla a webcam
         self.camera = cv2.VideoCapture(0)
+        # Tradução: se a câmera n abriu, mostre camera n encontrada
         if not self.camera.isOpened():
             self.ids.label_placa.text= 'X Câmera não encontrada!'
             return
+        #Agr a câmera está ligada
         self.rodando = True
         Clock.schedule_interval(self.atualizar_camera, 1/30)  # 30fps
 
         
         
-        
+    #Esse método da animação do scaner
     def animar_scan(self):
         self.scan_direcao = 1
         self.scan_pos = 0.05
@@ -80,13 +98,17 @@ class TelaPrincipal(Screen):
 
         self.ids.linha_scan.pos_hint = {'center_x': 0.5, 'top': self.scan_pos + 0.05}
         
+        
+    #Quando a tela deixa de ser exibida
     def on_leave(self):
         # Quando sair da tela, desliga a câmera
         self.rodando = False
+        #Para a câmera parar de atualizar msm dps de trocar de tela
         Clock.unschedule(self.atualizar_camera)
         if self.camera:
             self.camera.release()
 
+    #Esse método deixa tudo certinho pra cÂmera ler os carcteres
     def atualizar_camera(self, dt):
         # Captura frame e exibe na tela
         ret, frame = self.camera.read()
@@ -98,6 +120,7 @@ class TelaPrincipal(Screen):
             texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
             self.ids.camera_view.texture = texture
 
+    
     def capturar_placa(self):
         #Inicia a animação da linha do scan
         self.animar_scan()
@@ -120,6 +143,7 @@ class TelaPrincipal(Screen):
         # Roda o OCR em thread separada pra não travar a interface
         threading.Thread(target=self.processar_placa, args=(caminho_temp,)).start()
 
+    #analisa a placa
     def processar_placa(self, caminho_imagem):
         Clock.schedule_once(lambda dt: self.ids.label_placa.__setattr__('text', 'Lendo placa...'))
     
@@ -127,6 +151,7 @@ class TelaPrincipal(Screen):
     
         Clock.schedule_once(lambda dt: self.finalizar_leitura(placa))
 
+    #método que inicia pra mostrar tudo, matricula e etc
     def finalizar_leitura(self, placa):
         #Para a animação de ascan
         Clock.unschedule(self.atualizar_scan)
@@ -141,19 +166,21 @@ class TelaPrincipal(Screen):
         if resultado:
             matricula, nome, setor, ativa = resultado
             if ativa:
-                registrar_acesso(placa, 'LIBERADO')
+                data_hora = registrar_acesso(placa, 'LIBERADO')
                 tela = self.manager.get_screen('liberado')
                 tela.ids.label_nome.text = f'Nome: {nome}'
                 tela.ids.label_setor.text = f'Setor: {setor}'
                 tela.ids.label_matricula.text = f'Matrícula: {matricula}'
+                tela.ids.label_data.text = f'Data/Hora: {data_hora}'
                 self.manager.current = 'liberado'
             else:
-                registrar_acesso(placa, 'NEGADO', 'Matrícula inativa')
+                data_hora = registrar_acesso(placa, 'NEGADO', 'Matrícula inativa')
                 tela = self.manager.get_screen('negado')
                 tela.ids.label_placa_negado.text = f'Placa: {placa}'
                 tela.ids.label_nome_negado.text = f'Nome: {nome}'
                 tela.ids.label_matricula_negado.text = f'Matricula: {matricula}'
                 tela.ids.label_motivo_negado.text = 'Matrícula inativa'
+                tela.ids.label_data_negado.text = f'Data/Hora: {data_hora}'
                 self.manager.current = 'negado'
         else:
             registrar_acesso(placa, 'NEGADO', 'Placa não cadastrada')
@@ -171,10 +198,12 @@ class TelaPrincipal(Screen):
             filters=[("Imagens", "*.png", "*.jpg", "*.jpeg", "*.webp")]
         )
         
+    #Se a lista estiver vazia significa que o usuário fechou a aba
     def imagem_selecionada(self, selecao):
         if not selecao:
             return #usuário cancelou
         
+        #só escolhe uma imagem a primeira
         caminho_imagem = selecao[0]
         threading.Thread(target=self.processar_placa, args=(caminho_imagem,)).start()
 # Tela que aparece quando o acesso é liberado
@@ -189,7 +218,7 @@ class TelaAcessoNegado(Screen):
 class GerenciadorTelas(ScreenManager):
     pass
 
-# Classe principal do app
+# Classe principal do app, inicia as telas
 class ControleAcessoApp(App):
     def build(self):
         criar_banco()
